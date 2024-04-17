@@ -7,6 +7,7 @@ export const MainComp = () => {
     const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
     const [lifes, setLifes] = useState<number>(3);
     const [score, setScore] = useState<number>(0);
+    const [gameStarted, setGameStarted] = useState<boolean>(false);
     const playerRef = useRef<HTMLDivElement>(null);
     const boardRef = useRef<HTMLDivElement>(null);
 
@@ -14,9 +15,9 @@ export const MainComp = () => {
         document.addEventListener('keydown', handleMove);
         const bulletInterval = setInterval(moveBullets, 50);
         const enemyInterval = setInterval(createEnemy, 1000);
-        const moveEnemiesInterval = setInterval(moveEnemies, 100);
+        const moveEnemiesInterval = setInterval(moveEnemies, 50);
 
-        if (lifes === 0) {
+        if (lifes === 0 || !gameStarted) {
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletInterval);
             clearInterval(enemyInterval);
@@ -27,12 +28,20 @@ export const MainComp = () => {
             clearInterval(bulletInterval);
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
+            document.removeEventListener('keydown', handleMove)
         };
-    }, [lifes]);
+    }, [lifes, gameStarted]);
 
-
-
-
+    const resetGame = () => {
+        setGameStarted(true);
+        setScore(0);
+        setLifes(3);
+        enemies.forEach(enemy => enemy.remove());
+        bullets.forEach(bullet => bullet.remove())
+        playerRef.current!.style.left = "50%";
+        playerRef.current!.style.bottom = "0%";
+        boardRef.current!.style.animation = 'moveBg 1.5s infinite linear';
+    }
 
     const handleMove = (e: any) => {
         if (!playerRef.current || !boardRef.current) return;
@@ -42,8 +51,10 @@ export const MainComp = () => {
 
         switch (e.code) {
             case 'Space': createBullet(playerElement, boardElement); break;
-            case 'ArrowLeft': movePlayer(playerElement, boardElement, -1); break;
-            case 'ArrowRight': movePlayer(playerElement, boardElement, 1);
+            case 'ArrowLeft': movePlayerX(playerElement, boardElement, -1); break;
+            case 'ArrowRight': movePlayerX(playerElement, boardElement, 1); break;
+            case 'ArrowUp': movePlayerY(playerElement, boardElement, -1); break;
+            case 'ArrowDown': movePlayerY(playerElement, boardElement, 1); break;
         }
     }
 
@@ -51,7 +62,7 @@ export const MainComp = () => {
         const bullet = document.createElement('div');
         bullet.className = 'bullet';
         bullet.style.left = `${playerElement.offsetLeft}px`;
-        bullet.style.bottom = `${playerElement.offsetHeight}px`;
+        bullet.style.top = `${playerElement.offsetTop}px`;
         boardElement.appendChild(bullet);
         setBullets(prevBullets => [...prevBullets, bullet]);
     }
@@ -73,8 +84,6 @@ export const MainComp = () => {
         });
     };
 
-
-
     const checkBulletCollision = (bullet: HTMLDivElement) => {
         setEnemies(prevEnemies => {
             const updatedEnemies = prevEnemies.filter(enemy => {
@@ -90,9 +99,9 @@ export const MainComp = () => {
                     setScore(prevScore => prevScore + 1);
                     enemy.remove();
                     bullet.remove();
-                    return false; // Return false to remove the enemy from the updatedEnemies array
+                    return false;
                 }
-                return true; // Return true to keep the enemy in the updatedEnemies array
+                return true;
             });
             return updatedEnemies;
         });
@@ -111,14 +120,21 @@ export const MainComp = () => {
 
     }
 
-    const movePlayer = (playerElement: HTMLDivElement, boardElement: HTMLDivElement, direction: number) => {
+    const movePlayerX = (playerElement: HTMLDivElement, boardElement: HTMLDivElement, direction: number) => {
         const newPosition: number = playerElement.offsetLeft + direction * 10
         const { left, right } = boardElement.getBoundingClientRect();
         const minLeft = playerElement.offsetWidth / 2;
         const maxRight = right - left - minLeft;
-
         if (newPosition >= minLeft && newPosition < maxRight) {
             playerElement.style.left = `${newPosition}px`
+        }
+    }
+
+    const movePlayerY = (playerElement: HTMLDivElement, boardElement: HTMLDivElement, direction: number) => {
+        const newPosition: number = playerElement.offsetTop + direction * 10
+        const maxTop = boardElement.offsetHeight - playerElement.offsetHeight;
+        if (newPosition >= 0 && newPosition < maxTop) {
+            playerElement.style.top = `${newPosition}px`
         }
     }
 
@@ -139,7 +155,7 @@ export const MainComp = () => {
         setEnemies(prevEnemies => {
             const updatedEnemies: HTMLDivElement[] = [];
             prevEnemies.forEach(enemy => {
-                const newTop = enemy.offsetTop + 5;
+                const newTop = enemy.offsetTop + 2;
                 enemy.style.top = `${newTop}px`;
                 if (newTop < boardRef.current!.offsetHeight) {
                     updatedEnemies.push(enemy);
@@ -168,15 +184,22 @@ export const MainComp = () => {
                     <span>{score}</span>
                 </div>
                 <div id='lifes'>{showLifes()}</div>
-                <div id='game-end' hidden={Boolean(lifes)}>
+                <div id='game-end' className='card' hidden={Boolean(lifes)}>
                     <h2>Koniec gry :(</h2>
                     Kosmiczne statki przedostały się na Ziemię...
-                    <br/><br/>
-                    <button className='button' onClick={() => {}}>Zacznij od nowa</button>
+                    <br /><br />
+                    <button className='button' onClick={() => resetGame()}>Zacznij od nowa</button>
+                </div>
+                <div id='game-start' className='card' hidden={gameStarted}>
+                    <h2>Zostań obrońcą ziemi!</h2>
+                    Nie pozwól, aby kosmiczne statki przedostały sie na Ziemię.
+                    <br /><br />
+                    <code>Strzałki</code> - poruszanie<br />
+                    <code>Spacja</code> - strzał<br />
+                    <br /><br />
+                    <button className='button' onClick={() => resetGame()}>Rozpocznij grę</button>
                 </div>
             </div>
         </div>
-
     )
-
 }

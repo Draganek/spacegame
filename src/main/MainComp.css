@@ -61,6 +61,11 @@ h1 {
     width: 20px;
     vertical-align: middle;
 }
+.points span {
+    width: 20px;
+    padding-left: 5px;
+    vertical-align: middle;
+}
 #lifes {
     z-index: 3;
     right: 20px;
@@ -74,7 +79,7 @@ h1 {
     height: 25px;
     background: url("../img/life.png") no-repeat center / contain;
 }
-#game-end {
+.card {
     z-index: 4;
     position: absolute;
     top: 50%;
