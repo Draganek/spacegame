@@ -199,6 +199,12 @@ export const MainComp = () => {
                     <br /><br />
                     <button className='button' onClick={() => resetGame()}>Rozpocznij grę</button>
                 </div>
+                <div  className='card' hidden>
+                    <h2>Udało ci się przejść poziom!</h2>
+                    
+                    <br /><br />
+                    <button className='button' onClick={() => resetGame()}>Następny poziom!</button>
+                </div>
             </div>
         </div>
     )
