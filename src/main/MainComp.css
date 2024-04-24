@@ -99,3 +99,14 @@ h1 {
     font-weight: bold;
     cursor: pointer;
 }
+.level {
+    z-index: 3;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    font-size: 28px;
+    font-weight: bold;
+    color: rgb(186, 240, 186);
+    height: 10px;
+    transform: translate(-50%);
+}

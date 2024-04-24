@@ -5,23 +5,26 @@ import scoreImage from "../img/coin.png"
 export const MainComp = () => {
     const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
     const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
+    const [level, setLevel] = useState<number>(1);
     const [lifes, setLifes] = useState<number>(3);
     const [score, setScore] = useState<number>(0);
     const [gameStarted, setGameStarted] = useState<boolean>(false);
+    const [newLevel, setNewLevel] = useState<boolean>(false);
     const playerRef = useRef<HTMLDivElement>(null);
     const boardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         document.addEventListener('keydown', handleMove);
         const bulletInterval = setInterval(moveBullets, 50);
-        const enemyInterval = setInterval(createEnemy, 1000);
-        const moveEnemiesInterval = setInterval(moveEnemies, 50);
+        const enemyInterval = setInterval(createEnemy, 1000 - 5 * level);
+        const moveEnemiesInterval = setInterval(moveEnemies, 50 - 5 * level);
 
-        if (lifes === 0 || !gameStarted) {
+        if (lifes === 0 || !gameStarted || newLevel) {
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletInterval);
             clearInterval(enemyInterval);
             boardRef.current!.style.animation = 'none';
+            document.removeEventListener('keydown', handleMove)
         }
 
         return () => {
@@ -30,7 +33,13 @@ export const MainComp = () => {
             clearInterval(moveEnemiesInterval);
             document.removeEventListener('keydown', handleMove)
         };
-    }, [lifes, gameStarted]);
+    }, [lifes, gameStarted, newLevel, level]);
+
+    useEffect(() => {
+        if (score >= 10 * level) {
+            setNewLevel(true);
+        }
+    }, [score])
 
     const resetGame = () => {
         setGameStarted(true);
@@ -174,6 +183,12 @@ export const MainComp = () => {
         ));
     }
 
+    const changeLevel = (level:number) => {
+        setLevel(oldLevel => (oldLevel + level));
+        setNewLevel(false);
+        boardRef.current!.style.animation = 'moveBg 1.5s infinite linear';
+    }
+
     return (
         <div>
             <h1>Space defender</h1>
@@ -182,6 +197,9 @@ export const MainComp = () => {
                 <div className='points'>
                     <img src={scoreImage}></img>
                     <span>{score}</span>
+                </div>
+                <div className='level' hidden={!gameStarted}>
+                    <span>Poziom {level}</span>
                 </div>
                 <div id='lifes'>{showLifes()}</div>
                 <div id='game-end' className='card' hidden={Boolean(lifes)}>
@@ -199,11 +217,10 @@ export const MainComp = () => {
                     <br /><br />
                     <button className='button' onClick={() => resetGame()}>Rozpocznij grę</button>
                 </div>
-                <div  className='card' hidden>
-                    <h2>Udało ci się przejść poziom!</h2>
-                    
+                <div className='card' hidden={!newLevel}>
+                    <h2>Udało ci się przejść poziom {level}!</h2>
                     <br /><br />
-                    <button className='button' onClick={() => resetGame()}>Następny poziom!</button>
+                    <button className='button' onClick={() => changeLevel(1)}>Następny poziom!</button>
                 </div>
             </div>
         </div>
