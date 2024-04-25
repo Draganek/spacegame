@@ -1,0 +1,114 @@
+
+
+html {font-family: 'consolas';}
+h1 { 
+    text-align: center;
+}
+#game-board-mobile {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid #000;
+    margin: 0 auto;
+    position: absolute;
+    overflow: hidden;
+    background: url('../img/bg.jpg') repeat;
+    animation: moveBg 1.3s infinite linear;
+}
+@keyframes moveBg {
+    from { background-position: 0 0%;}
+    to { background-position: 0 130%;}
+}
+
+#player {
+    width: 80px;
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%);
+    background: url('./../img/player.png') no-repeat center / contain;
+}
+.bullet {
+    position: absolute;
+    width: 6px;
+    height: 10px;
+    background: url('./../img/shot.png') no-repeat center / contain;
+}
+.enemy {
+    z-index: 2;
+    width: 60px;
+    height: 40px;
+    position: absolute;
+    background: url('./../img/alien.png') no-repeat center / contain;
+}
+.explosion {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    background: url('../img/explosion.png') no-repeat center / contain;
+}
+.points {
+    z-index: 3;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: rgb(38, 206, 38);
+    height: 10px;
+}
+.points img {
+    width: 20px;
+    vertical-align: middle;
+}
+.points span {
+    width: 20px;
+    padding-left: 5px;
+    vertical-align: middle;
+}
+#lifes {
+    z-index: 3;
+    right: 20px;
+    top: 20px;
+    position: absolute;
+    display: flex;
+    gap: 10px
+}
+.life {
+    width: 25px;
+    height: 25px;
+    background: url("../img/life.png") no-repeat center / contain;
+}
+.card {
+    z-index: 4;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    padding: 30px 50px;
+    color: white;
+    background-color: #2c2c48;
+    transform: translate(-50%, -50%);
+}
+.button {
+    color: white;
+    background-color: #494975;
+    border: 3px dashed #58589f;
+    display: block;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.level {
+    z-index: 3;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    font-size: 28px;
+    font-weight: bold;
+    color: rgb(186, 240, 186);
+    height: 10px;
+    transform: translate(-50%);
+}

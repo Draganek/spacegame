@@ -1,0 +1,53 @@
+body {
+    background-color: rgb(85, 85, 85);
+}
+h1 {
+    padding: 1rem;
+    text-align: center;
+    background-color: rgb(106, 203, 233);
+    border: 0.3rem dashed #261d72;
+    color: rgb(9, 3, 99);
+}
+.tiles-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%; /* Szerokość kafelka */
+    margin-bottom: 20px; /* Odstęp między kafelkami */
+    background-color: rgb(106, 203, 233);
+    border: 0.3rem solid #261d72;
+}
+
+.tile:hover {
+    transform: scale(1.02); /* Powiększenie kafelka */
+    border: 0.3rem solid #ffffff;
+}
+
+.tile-image {
+    margin: 1rem;
+    border: 0.3rem solid #261d72;
+    width: 15rem; /* Szerokość zdjęcia */
+    height: 10rem; /* Wysokość zdjęcia */
+    object-fit: cover; /* Dopasowanie zdjęcia */
+}
+
+.tile-name {
+    margin: 0;
+    height: 3rem;
+    width: 100%;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    background-color: rgb(42, 166, 204);
+    border-top: 0.3rem solid #261d72;
+    display: flex;
+    align-items: center; /* Pionowo wyśrodkowanie tekstu */
+    justify-content: center; /* Poziome wyśrodkowanie tekstu */
+}

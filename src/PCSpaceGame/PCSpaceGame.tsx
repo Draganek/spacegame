@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import './MainComp.css'
+import './PCSpaceGame.css'
 import scoreImage from "../img/coin.png"
 
-export const MainComp = () => {
+export const PCSpaceGame = () => {
     const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
     const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
     const [level, setLevel] = useState<number>(1);
