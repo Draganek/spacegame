@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './MobileSpaceGame.css'
+import { PlayerMove } from './Player/Player'
+import { createEnemy, moveEnemies } from './Enemies/Enemies'
 import scoreImage from "../img/coin.png"
 
 
@@ -18,18 +20,15 @@ export const MobileSpaceGame = () => {
     const [shipPosition, setShipPosition] = useState({ x: "50%", y: '0%' });
 
     useEffect(() => {
-        const enemyInterval = setInterval(createEnemy, 1000 - 15 * level);
-        const moveEnemiesInterval = setInterval(moveEnemies, 50 - 5 * level);
+        const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - 15 * level);
+        const moveEnemiesInterval = setInterval( () => moveEnemies(boardRef, setEnemies, setLifes), 50 - 5 * level);
         const bulletShotInterval = setInterval(createBullet, 1000 * bulletSpeed);
         const bulletInterval = setInterval(moveBullets, 50);
         const handleTouchMove = (e: TouchEvent) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            if (touch.clientY > boardRef.current!.offsetHeight || touch.clientY - playerRef.current!.offsetHeight < 0 || touch.clientX > boardRef.current!.offsetWidth || touch.clientX < 0) {
-            }
-            else {
-                setShipPosition({ x: `${touch.clientX}px`, y: `${-touch.clientY + boardRef.current!.offsetHeight}px` });
-            }
+            const newPosition = PlayerMove(e, boardRef, playerRef);
+            if (newPosition) {
+                setShipPosition(newPosition);
+              }
         };
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
@@ -42,36 +41,6 @@ export const MobileSpaceGame = () => {
         };
     }, [lifes, gameStarted, newLevel, level, bulletSpeed]);
 
-
-    const createEnemy = () => {
-        const shouldCreate = Math.round(Math.random());
-        if (shouldCreate) {
-            const enemy = document.createElement('div');
-            enemy.className = "enemy";
-            enemy.style.top = '-40px';
-            enemy.style.left = `${Math.floor(Math.random() * (boardRef.current!.offsetWidth - 120) + 60)}px`
-
-            boardRef.current!.append(enemy);
-            setEnemies(prevEnemies => [...prevEnemies, enemy]);
-        }
-    }
-
-    const moveEnemies = () => {
-        setEnemies(prevEnemies => {
-            const updatedEnemies: HTMLDivElement[] = [];
-            prevEnemies.forEach(enemy => {
-                const newTop = enemy.offsetTop + 2;
-                enemy.style.top = `${newTop}px`;
-                if (newTop < boardRef.current!.offsetHeight) {
-                    updatedEnemies.push(enemy);
-                } else {
-                    enemy.remove();
-                    setLifes(prevLifes => prevLifes - 1)
-                }
-            });
-            return updatedEnemies;
-        });
-    };
 
     const createBullet = () => {
         const bullet = document.createElement('div');
