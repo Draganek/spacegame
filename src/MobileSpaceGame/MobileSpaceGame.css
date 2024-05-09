@@ -51,7 +51,7 @@ h1 {
 .points {
     z-index: 3;
     position: absolute;
-    top: 20px;
+    top: 0.5rem;
     left: 20px;
     font-size: 28px;
     font-weight: bold;
@@ -70,7 +70,7 @@ h1 {
 #lifes {
     z-index: 3;
     right: 20px;
-    top: 20px;
+    top: 1.2rem;
     position: absolute;
     display: flex;
     gap: 10px
@@ -103,9 +103,9 @@ h1 {
 .level {
     z-index: 3;
     position: absolute;
-    top: 20px;
+    top: 1.2rem;
     left: 50%;
-    font-size: 28px;
+    font-size: 1.3rem;
     font-weight: bold;
     color: rgb(186, 240, 186);
     height: 10px;

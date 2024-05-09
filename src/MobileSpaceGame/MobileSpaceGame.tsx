@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import './MobileSpaceGame.css'
-import { PlayerMove } from './Player/Player'
+import { playerMove, createBullet, moveBullets } from './Player/Player'
 import { createEnemy, moveEnemies } from './Enemies/Enemies'
-import scoreImage from "../img/coin.png"
+import { Points, ShowLifes, LevelShow } from './InterfaseIcon/InterfaseIcon'
+import { GameLose, LevelWon, StartMenu } from './ModalWinows/ModalWindows'
+const defaultMusic = require('./music/intro.mp3');
 
 
 export const MobileSpaceGame = () => {
     const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
     const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
-    const [level, setLevel] = useState<number>(3);
+    const [level, setLevel] = useState<number>(1);
     const [lifes, setLifes] = useState<number>(3);
     const [score, setScore] = useState<number>(0);
     const [bulletSpeed, SetBulletSpeed] = useState<number>(1);
@@ -16,21 +18,26 @@ export const MobileSpaceGame = () => {
     const [newLevel, setNewLevel] = useState<boolean>(false);
     const playerRef = useRef<HTMLDivElement>(null);
     const boardRef = useRef<HTMLDivElement>(null);
-
     const [shipPosition, setShipPosition] = useState({ x: "50%", y: '0%' });
 
     useEffect(() => {
         const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - 15 * level);
         const moveEnemiesInterval = setInterval( () => moveEnemies(boardRef, setEnemies, setLifes), 50 - 5 * level);
-        const bulletShotInterval = setInterval(createBullet, 1000 * bulletSpeed);
-        const bulletInterval = setInterval(moveBullets, 50);
-        const handleTouchMove = (e: TouchEvent) => {
-            const newPosition = PlayerMove(e, boardRef, playerRef);
-            if (newPosition) {
-                setShipPosition(newPosition);
-              }
-        };
+        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets), 1000 * bulletSpeed);
+        const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 50);
+        const handleTouchMove = (e: TouchEvent) => playerMove(e, boardRef, playerRef, setShipPosition);
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        
+        if (lifes === 0 || !gameStarted || newLevel ) {
+            clearInterval(enemyInterval);
+            clearInterval(moveEnemiesInterval);
+            clearInterval(bulletShotInterval);
+            clearInterval(bulletInterval);
+            
+            boardRef.current!.style.animation = 'none';
+            window.removeEventListener('touchmove', handleTouchMove)
+            window.addEventListener('touchmove', (e) => {e.preventDefault()}, { passive: false });
+        }
 
         return () => {
             window.removeEventListener('touchmove', handleTouchMove);
@@ -41,68 +48,39 @@ export const MobileSpaceGame = () => {
         };
     }, [lifes, gameStarted, newLevel, level, bulletSpeed]);
 
+    useEffect(() => {
+        if (score >= 10 * level) {
+            setNewLevel(true);
+        }
+    }, [score])
 
-    const createBullet = () => {
-        const bullet = document.createElement('div');
-        bullet.className = 'bullet';
-        bullet.style.left = `${playerRef.current!.offsetLeft}px`;
-        bullet.style.top = `${playerRef.current!.offsetTop}px`;
-        boardRef.current!.appendChild(bullet);
-        setBullets(prevBullets => [...prevBullets, bullet]);
+    const resetGame = () => {
+        setGameStarted(true);
+        setScore(0);
+        setLifes(3);
+        setLevel(1);
+        enemies.forEach(enemy => enemy.remove());
+        bullets.forEach(bullet => bullet.remove())
+        playerRef.current!.style.left = "50%";
+        playerRef.current!.style.bottom = "0%";
+        boardRef.current!.style.animation = 'moveBg 1.5s infinite linear';
+        backgroundMusic();
     }
-
-    const moveBullets = () => {
-        setBullets(prevBullets => {
-            const updatedBullets: HTMLDivElement[] = [];
-            prevBullets.forEach(bullet => {
-                if (bullet.offsetTop >= 0) {
-                    const newTop = bullet.offsetTop - 5;
-                    bullet.style.top = `${newTop}px`;
-                    updatedBullets.push(bullet);
-                    checkBulletCollision(bullet);
-                } else {
-                    bullet.remove();
-                }
-            });
-            return updatedBullets;
+    
+    const backgroundMusic = () => {
+        const backgroundMusic = new Howl({
+            src: [defaultMusic],
+            volume: 0.3, // Ustawienie głośności na 50% (wartość od 0 do 1)
+            loop: true // Zapętlenie muzyki
         });
-    };
-
-    const checkBulletCollision = (bullet: HTMLDivElement) => {
-        setEnemies(prevEnemies => {
-            const updatedEnemies = prevEnemies.filter(enemy => {
-                const bulletPosition = bullet.getBoundingClientRect();
-                const enemyPosition = enemy.getBoundingClientRect();
-                if (
-                    bulletPosition.left < enemyPosition.right &&
-                    bulletPosition.right > enemyPosition.left &&
-                    bulletPosition.top < enemyPosition.bottom &&
-                    bulletPosition.bottom > enemyPosition.top
-                ) {
-                    makeExplosion(enemy.offsetLeft, enemy.offsetTop);
-                    setScore(prevScore => prevScore + 1);
-                    enemy.remove();
-                    bullet.remove();
-                    return false;
-                }
-                return true;
-            });
-            return updatedEnemies;
+    
+        // Automatyczne rozpoczęcie odtwarzania po załadowaniu
+        backgroundMusic.once('load', () => {
+            backgroundMusic.play();
         });
+    
+        return null; // Nie renderujemy niczego, ponieważ ten komponent jest odpowiedzialny tylko za odtwarzanie muzyki
     };
-
-    const makeExplosion = (left: number, top: number) => {
-        const explosion = document.createElement('div');
-        explosion.className = 'explosion';
-        explosion.style.left = `${left}px`
-        explosion.style.top = `${top}px`
-        boardRef.current!.appendChild(explosion)
-
-        setTimeout(() => {
-            explosion.remove();
-        }, 500)
-
-    }
 
     return (
         <div>
@@ -116,6 +94,12 @@ export const MobileSpaceGame = () => {
                         bottom: shipPosition.y,
                     }}>
                 </div>
+                <LevelShow gameStarted={gameStarted} newLevel={newLevel} level={level}/>
+                <Points score={score}/>
+                <ShowLifes lifes={lifes}/>
+                <GameLose lifes={lifes} reset={resetGame}/>
+                <StartMenu gameStarted={gameStarted} reset={resetGame}/>
+                <LevelWon newLevel={newLevel} level={level} setLevel={setLevel} setNewLevel={setNewLevel} boardRef={boardRef} playerRef={playerRef} enemies={enemies} bullets={bullets}/>
             </div>
         </div >
     )

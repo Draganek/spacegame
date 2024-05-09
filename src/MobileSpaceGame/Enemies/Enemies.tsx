@@ -14,18 +14,18 @@ export const createEnemy = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
 }
 
 export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, setLifes: Dispatch<SetStateAction<number>>) => {
-        setEnemies(prevEnemies => {
-            const updatedEnemies: HTMLDivElement[] = [];
-            prevEnemies.forEach(enemy => {
-                const newTop = enemy.offsetTop + 2;
-                enemy.style.top = `${newTop}px`;
-                if (newTop < boardRef.current!.offsetHeight) {
-                    updatedEnemies.push(enemy);
-                } else {
-                    enemy.remove();
-                    setLifes(prevLifes => prevLifes - 1)
-                }
-            });
-            return updatedEnemies;
+    setEnemies(prevEnemies => {
+        const updatedEnemies: HTMLDivElement[] = [];
+        prevEnemies.forEach(enemy => {
+            const newTop = enemy.offsetTop + 2;
+            enemy.style.top = `${newTop}px`;
+            if (newTop < boardRef.current!.offsetHeight) {
+                updatedEnemies.push(enemy);
+            } else {
+                enemy.remove();
+                setLifes(prevLifes => prevLifes - 1)
+            }
         });
-    };
+        return updatedEnemies;
+    });
+};
