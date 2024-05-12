@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useStorage from '../hooks/useStorage'
 import './MobileSpaceGame.css'
 import { playerMove, createBullet, moveBullets } from './Player/Player'
 import { createEnemy, moveEnemies } from './Enemies/Enemies'
@@ -8,25 +9,34 @@ const defaultMusic = require('./music/intro.mp3');
 
 
 export const MobileSpaceGame = () => {
-    const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
-    const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
+    const [record, setRecord] = useStorage<number>('record', 0);
     const [level, setLevel] = useState<number>(1);
     const [lifes, setLifes] = useState<number>(3);
     const [score, setScore] = useState<number>(0);
-    const [bulletSpeed, SetBulletSpeed] = useState<number>(1);
+
+    const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
+    
     const [gameStarted, setGameStarted] = useState<boolean>(false);
     const [newLevel, setNewLevel] = useState<boolean>(false);
+
+    const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
+    const [bulletSpeed, SetBulletSpeed] = useState<number>(1);
+    const [shipPosition, setShipPosition] = useState({ x: "50%", y: '0%' });
+
     const playerRef = useRef<HTMLDivElement>(null);
     const boardRef = useRef<HTMLDivElement>(null);
-    const [shipPosition, setShipPosition] = useState({ x: "50%", y: '0%' });
 
     useEffect(() => {
         const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - 15 * level);
-        const moveEnemiesInterval = setInterval( () => moveEnemies(boardRef, setEnemies, setLifes), 50 - 5 * level);
+        const moveEnemiesInterval = setInterval( () => moveEnemies(boardRef, setEnemies, setLifes), 25 - 1.5 * level);
         const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets), 1000 * bulletSpeed);
-        const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 50);
+        const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 10);
         const handleTouchMove = (e: TouchEvent) => playerMove(e, boardRef, playerRef, setShipPosition);
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+        if (level > record) {
+            setRecord(level);
+        }
         
         if (lifes === 0 || !gameStarted || newLevel ) {
             clearInterval(enemyInterval);
@@ -46,7 +56,7 @@ export const MobileSpaceGame = () => {
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
         };
-    }, [lifes, gameStarted, newLevel, level, bulletSpeed]);
+    }, [lifes, gameStarted, newLevel, level, bulletSpeed, record]);
 
     useEffect(() => {
         if (score >= 10 * level) {
@@ -97,8 +107,8 @@ export const MobileSpaceGame = () => {
                 <LevelShow gameStarted={gameStarted} newLevel={newLevel} level={level}/>
                 <Points score={score}/>
                 <ShowLifes lifes={lifes}/>
-                <GameLose lifes={lifes} reset={resetGame}/>
-                <StartMenu gameStarted={gameStarted} reset={resetGame}/>
+                <GameLose lifes={lifes} reset={resetGame} level={level} record={record}/>
+                <StartMenu gameStarted={gameStarted} reset={resetGame} record={record}/>
                 <LevelWon newLevel={newLevel} level={level} setLevel={setLevel} setNewLevel={setNewLevel} boardRef={boardRef} playerRef={playerRef} enemies={enemies} bullets={bullets}/>
             </div>
         </div >

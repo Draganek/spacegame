@@ -16,8 +16,11 @@ export const createEnemy = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
 export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, setLifes: Dispatch<SetStateAction<number>>) => {
     setEnemies(prevEnemies => {
         const updatedEnemies: HTMLDivElement[] = [];
+        const boardHeight = boardRef.current!.offsetHeight;
+        const moveDistance = 0.0025 * boardHeight;
+
         prevEnemies.forEach(enemy => {
-            const newTop = enemy.offsetTop + 2;
+            const newTop = enemy.offsetTop + moveDistance;
             enemy.style.top = `${newTop}px`;
             if (newTop < boardRef.current!.offsetHeight) {
                 updatedEnemies.push(enemy);

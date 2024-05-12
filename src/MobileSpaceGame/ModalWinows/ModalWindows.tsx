@@ -5,7 +5,7 @@ const soundGameLose = require('../sounds/game_lose.wav');
 
 
 
-export const GameLose = ({ lifes, reset }: { lifes: number; reset: () => void }) => {
+export const GameLose = ({ lifes, reset, level, record }: { lifes: number; reset: () => void; level: number; record: number }) => {
     if(!lifes) {
         let file = new Howl({
             src: [soundGameLose]
@@ -15,13 +15,14 @@ export const GameLose = ({ lifes, reset }: { lifes: number; reset: () => void })
     return (
         <div id='game-end' className='card' hidden={Boolean(lifes)}>
             <h2>Koniec gry :(</h2>
+            <h4>Udało ci się dojść do {level} poziomu! (Rekord: {record})</h4>
             Kosmiczne statki przedostały się na Ziemię...
             <br /><br />
             <button className='button' onClick={reset}>Zacznij od nowa</button>
         </div>
     )
 }
-export const StartMenu = ({ gameStarted, reset }: { gameStarted: boolean; reset: () => void }) => {
+export const StartMenu = ({ gameStarted, reset, record }: { gameStarted: boolean; reset: () => void; record: number }) => {
     return (
         <div id='game-start' className='card' hidden={gameStarted}>
             <h2>Zostań obrońcą ziemi!</h2>
@@ -29,7 +30,9 @@ export const StartMenu = ({ gameStarted, reset }: { gameStarted: boolean; reset:
             <br /><br />
             <code>Poruszanie</code> - dotyk<br />
             <code>Strzał</code> - automatyczny<br />
-            <br /><br />
+            <br />
+            <code>Twój rekord to: {record}</code>
+            <br /> <br />
             <button className='button' onClick={reset}>Rozpocznij grę</button>
         </div>
     )

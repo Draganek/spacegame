@@ -21,7 +21,7 @@ export const createBullet = (boardRef: RefObject<HTMLDivElement>, playerRef: Ref
 
     const bullet = document.createElement('div');
     bullet.className = 'bullet';
-    bullet.style.left = `${playerRef.current!.offsetLeft}px`;
+    bullet.style.left = `${playerRef.current!.offsetLeft-4}px`;
     bullet.style.top = `${playerRef.current!.offsetTop}px`;
     boardRef.current!.appendChild(bullet);
 
@@ -32,9 +32,12 @@ export const createBullet = (boardRef: RefObject<HTMLDivElement>, playerRef: Ref
 export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, boardRef: RefObject<HTMLDivElement>, setScore: Dispatch<SetStateAction<number>>) => {
     setBullets(prevBullets => {
         const updatedBullets: HTMLDivElement[] = [];
+        const boardHeight = boardRef.current!.offsetHeight;
+        const moveDistance = 0.002 * boardHeight;
+
         prevBullets.forEach(bullet => {
             if (bullet.offsetTop >= 0) {
-                const newTop = bullet.offsetTop - 5;
+                const newTop = bullet.offsetTop - moveDistance;
                 bullet.style.top = `${newTop}px`;
                 updatedBullets.push(bullet);
                 checkBulletCollision(bullet, setEnemies, boardRef, setScore);
