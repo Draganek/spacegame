@@ -1,12 +1,22 @@
-import { RefObject, Dispatch, SetStateAction } from 'react';
+import { RefObject, Dispatch, SetStateAction, useState } from 'react';
+import "./ModalWindows.css"
 const soundLevelWin = require('../sounds/level_win.wav');
 const soundNextLevel = require('../sounds/next_level.wav');
 const soundGameLose = require('../sounds/game_lose.wav');
+const error = require('../sounds/error.mp3');
+const accept = require('../sounds/accept.mp3');
 
 
+interface UpgradesType {
+    name: string;
+    price: number;
+    image: string;
+    available: boolean;
+    level: number;
+}
 
 export const GameLose = ({ lifes, reset, level, record }: { lifes: number; reset: () => void; level: number; record: number }) => {
-    if(!lifes) {
+    if (!lifes) {
         let file = new Howl({
             src: [soundGameLose]
         });
@@ -37,7 +47,7 @@ export const StartMenu = ({ gameStarted, reset, record }: { gameStarted: boolean
         </div>
     )
 }
-export const LevelWon = ({ newLevel, level, setLevel, setNewLevel, boardRef, playerRef, enemies, bullets }: { newLevel: boolean, level: number, setLevel: Dispatch<SetStateAction<number>>, boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setNewLevel: Dispatch<SetStateAction<boolean>>, enemies: HTMLDivElement[], bullets: HTMLDivElement[] }) => {
+export const LevelWon = ({ setMoney, newLevel, level, setLevel, setNewLevel, boardRef, playerRef, enemies, bullets, setUpgrades, upgrades, money, lifes, setLifes }: { newLevel: boolean, level: number, setLevel: Dispatch<SetStateAction<number>>, boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setNewLevel: Dispatch<SetStateAction<boolean>>, enemies: HTMLDivElement[], bullets: HTMLDivElement[], setUpgrades: Dispatch<SetStateAction<UpgradesType[]>>, upgrades: UpgradesType[], money: number, setMoney: Dispatch<SetStateAction<number>>, lifes: number, setLifes: Dispatch<SetStateAction<number>> }) => {
     if (newLevel) {
         let file = new Howl({
             src: [soundLevelWin]
@@ -50,7 +60,7 @@ export const LevelWon = ({ newLevel, level, setLevel, setNewLevel, boardRef, pla
         });
         file.play();
     }
-    const changeLevel = (setLevel: Dispatch<SetStateAction<number>>, boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setNewLevel: Dispatch<SetStateAction<boolean>>, enemies: HTMLDivElement[], bullets: HTMLDivElement[]) => {
+    const changeLevel = (setLevel: Dispatch<SetStateAction<number>>, boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setNewLevel: Dispatch<SetStateAction<boolean>>, enemies: HTMLDivElement[], bullets: HTMLDivElement[], setUpgrades: Dispatch<SetStateAction<UpgradesType[]>>, upgrades: UpgradesType[]) => {
         setLevel(oldLevel => (oldLevel + 1));
         setNewLevel(false);
         enemies.forEach(enemy => enemy.remove());
@@ -59,13 +69,55 @@ export const LevelWon = ({ newLevel, level, setLevel, setNewLevel, boardRef, pla
         playerRef.current!.style.bottom = "0%";
         boardRef.current!.style.animation = 'moveBg 1.5s infinite linear';
     }
+
+    const buyUpgrade = (index: number, cost: number, setMoney: Dispatch<SetStateAction<number>>, upgrades: UpgradesType[], lifes: number, setLifes: Dispatch<SetStateAction<number>>) => {
+        const updatedUpgrades = [...upgrades];
+        if (money >= cost) {
+            if (upgrades[index].name === "Heal") {
+                if (lifes < upgrades[2].level) {
+                    setMoney(prevMoney => prevMoney - cost);
+                    setLifes(prevLifes => prevLifes + 1);
+                }
+            }
+            if (upgrades[index].name === "Max HP") {
+                setMoney(prevMoney => prevMoney - cost);
+                updatedUpgrades[index].level++;
+                setUpgrades(updatedUpgrades);
+            }
+            if (upgrades[index].name === "Szybkość") {
+                updatedUpgrades[index].level++;
+                setUpgrades(updatedUpgrades);
+                setMoney(prevMoney => prevMoney - cost)
+
+            }
+            let file = new Howl({
+                src: [accept]
+            });
+            file.play();
+        }
+        else {
+            let file = new Howl({
+                src: [error]
+            });
+            file.play();
+        }
+    };
+
     return (
         <div className='card' hidden={!newLevel}>
-            <h2>Udało ci się przejść poziom {level}!</h2>
-            <br /><br />
-
+            <h2>Przeszedłeś poziom {level}!</h2>
+            <div className='upgrade-window'>
+                {upgrades.map((upgrade, index) => (
+                    <div className='upgrade-card' key={index} onClick={() => buyUpgrade(index, upgrade.price, setMoney, upgrades, lifes, setLifes)}>
+                        <img src={require(`../../img/${upgrade.image}`)} alt={upgrade.name} />
+                        <h3>{upgrade.name} lvl.{upgrade.level}</h3>
+                        <h4>{upgrade.price}</h4>
+                    </div>
+                ))}
+            </div>
+            <br></br>
             <button className='button' onClick={() => {
-                changeLevel(setLevel, boardRef, playerRef, setNewLevel, enemies, bullets);
+                changeLevel(setLevel, boardRef, playerRef, setNewLevel, enemies, bullets, setUpgrades, upgrades);
                 playSound();
             }}>Następny poziom!</button>
         </div>

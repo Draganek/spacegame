@@ -4,10 +4,12 @@ import { PCSpaceGame } from './PCSpaceGame/PCSpaceGame';
 import { MobileSpaceGame} from './MobileSpaceGame/MobileSpaceGame'
 import { NoPage } from './NoPage/NoPage';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { GameStateProvider } from './Context/Context';
 
 
 const App: React.FC = () => {
   return (
+    <GameStateProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/mobile-sg" element={<MobileSpaceGame />}></Route>
@@ -16,6 +18,7 @@ const App: React.FC = () => {
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>
+    </GameStateProvider>
   );
 }
 

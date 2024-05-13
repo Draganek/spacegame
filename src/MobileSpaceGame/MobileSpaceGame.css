@@ -27,7 +27,7 @@ h1 {
 
 #player {
   height: 6vh;
-  width: 8vh;
+  width: 6vh;
   bottom: 0;
   left: 50%;
   transform: translate(-50%);
@@ -89,8 +89,8 @@ h1 {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 300px;
-  padding: 30px 50px;
+  width: 90%;
+  padding: 2vh 2vh;
   color: white;
   background-color: #2c2c48;
   transform: translate(-50%, -50%);
@@ -107,11 +107,20 @@ h1 {
 .level {
   z-index: 3;
   position: absolute;
-  top: 1.2rem;
+  top: 3.2rem;
   left: 50%;
   font-size: 1.3rem;
   font-weight: bold;
   color: rgb(186, 240, 186);
   height: 10px;
   transform: translate(-50%);
+}
+
+.hurt {
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  display: flex;
+  background: rgba(255, 0, 0, 0.438);
 }

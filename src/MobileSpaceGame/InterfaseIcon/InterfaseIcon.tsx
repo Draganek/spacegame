@@ -16,6 +16,7 @@ export const ShowLifes = ({ lifes }: { lifes: number }) => {
                 <div className="life" key={index}></div>
             ))}
         </div>
+
     );
 };
 

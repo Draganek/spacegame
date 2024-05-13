@@ -1,4 +1,5 @@
 import { RefObject, Dispatch, SetStateAction } from 'react';
+const hurt = require('../sounds/hurt.mp3');
 
 export const createEnemy = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>) => {
     const shouldCreate = Math.round(Math.random());
@@ -27,6 +28,11 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
             } else {
                 enemy.remove();
                 setLifes(prevLifes => prevLifes - 1)
+                let file = new Howl({
+                    src: [hurt],
+                    volume: 8
+                });
+                file.play();
             }
         });
         return updatedEnemies;
