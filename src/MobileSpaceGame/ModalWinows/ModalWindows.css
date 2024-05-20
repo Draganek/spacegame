@@ -1,49 +1,67 @@
 .upgrade-window {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Dwie kolumny */
-    gap: 1vh; /* Odstęp między kartami */
-  }
-  
-  .upgrade-card {
-    border: 0.5vh solid #ccc;
-    border-radius: 1vh;
-    text-align: center;
-    background-color: #3f6975;
-  }
-  
-  .upgrade-card img {
-    padding: 2vh;
-    max-width: 80%;
-    max-height: 80%;
-    padding-bottom: 1.5vh;
-  }
-  .upgrade-card:active {
-    transform: scale(1.04); /* Powiększenie kafelka */
-    border: 0.3rem solid #ffffff;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dwie kolumny */
+  gap: 1vh; /* Odstęp między kartami */
 }
-  
-  .upgrade-card h3 {
-    border-top: 0.4vh solid #acacac;
-    border-bottom: 0.4vh solid #acacac;
-    padding: 0.5vh;
-    margin: 0;
-  }
 
- .upgrade-card h4 {
-    padding: 0.5vh;
-    margin: 0;
-  }
-  
-  .upgrade-card button {
-    background-color: #455f7c;
-    width: 100%;
-    color: white;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .upgrade-card button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
+.upgrade-card {
+  border: 0.5vh solid #ccc;
+  border-radius: 1vh;
+  text-align: center;
+  background-color: #3f6975;
+  padding-top: 0.5vh;
+}
+
+.upgrade-card img {
+  padding: 2vh;
+  max-width: 70%;
+  max-height: 70%;
+  padding: 0.5vh;
+}
+.upgrade-card:active {
+  transform: scale(1.04); /* Powiększenie kafelka */
+  border: 0.3rem solid #ffffff;
+}
+
+.upgrade-card.disabled {
+  background-color: gray; /* Inny kolor tła */
+  color: lightgray; /* Inny kolor tekstu */
+  pointer-events: none; /* Uniemożliwienie kliknięcia */
+  cursor: not-allowed; /* Zmiana kursora */
+}
+
+.upgrade-card.disabled img {
+  filter: grayscale(100%) brightness(0.5); /* Przyciemnienie i zmiana na czarno-biały */
+  transform: scale(0.95); /* Zmniejszenie obrazu */
+}
+
+.card h2 {
+  text-align: center;
+  padding: 0;
+  margin: 1vh;
+}
+.upgrade-card h3 {
+  border-top: 0.4vh solid #acacac;
+  border-bottom: 0.4vh solid #acacac;
+  padding: 0.5vh;
+  margin: 0;
+}
+
+.upgrade-card h4 {
+  padding: 0.5vh;
+  margin: 0;
+}
+
+.upgrade-card button {
+  background-color: #455f7c;
+  width: 100%;
+  color: white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.upgrade-card button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

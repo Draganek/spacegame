@@ -28,7 +28,7 @@ export const MobileSpaceGame = () => {
     const [money, setMoney] = useState<number>(0);
     const [upgrades, setUpgrades] = useState<UpgradesType[]>([
         { "name": "Szybkość", "price": 20, "image": "frequency.jpg", "available": true, "level": 1 },
-        { "name": "ilość strzałów", "price": 300, "image": "ilosc.jpg", "available": true, "level": 1 },
+        { "name": "Strzały", "price": 300, "image": "ilosc.jpg", "available": true, "level": 1 },
         { "name": "Max HP", "price": 30, "image": "heart-max.jpg", "available": true, "level": 3 },
         { "name": "Heal", "price": 10, "image": "heart-heal.jpg", "available": true, "level": 1 }])
 
@@ -43,9 +43,9 @@ export const MobileSpaceGame = () => {
     const boardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets), 1400 - 150 * upgrades[0].level);
-        const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - 15 * level);
-        const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 40 - 3 * level);
+        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets), 1400 - 170 * upgrades[0].level);
+        const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - (15 * level));
+        const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 40 - (3 * level));
         const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 10);
         const handleTouchMove = (e: TouchEvent) => playerMove(e, boardRef, playerRef, setShipPosition);
         window.addEventListener('touchmove', handleTouchMove, { passive: false });

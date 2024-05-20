@@ -108,7 +108,15 @@ export const LevelWon = ({ setMoney, newLevel, level, setLevel, setNewLevel, boa
             <h2>Przeszedłeś poziom {level}!</h2>
             <div className='upgrade-window'>
                 {upgrades.map((upgrade, index) => (
-                    <div className='upgrade-card' key={index} onClick={() => buyUpgrade(index, upgrade.price, setMoney, upgrades, lifes, setLifes)}>
+                    <div
+                        className={`upgrade-card ${upgrade.level >= 5 ? 'disabled' : ''}`}
+                        key={index}
+                        onClick={() => {
+                            if (upgrade.level < 5) {
+                                buyUpgrade(index, upgrade.price, setMoney, upgrades, lifes, setLifes);
+                            }
+                        }}
+                    >
                         <img src={require(`../../img/${upgrade.image}`)} alt={upgrade.name} />
                         <h3>{upgrade.name} lvl.{upgrade.level}</h3>
                         <h4>{upgrade.price}</h4>
