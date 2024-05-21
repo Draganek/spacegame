@@ -93,7 +93,7 @@ export const MobileSpaceGame = () => {
         setScore(0);
         setLifes(3);
         setLevel(1);
-        setMoney(0)
+        setMoney(300)
 
         enemies.forEach(enemy => enemy.remove());
         bullets.forEach(bullet => bullet.remove())
