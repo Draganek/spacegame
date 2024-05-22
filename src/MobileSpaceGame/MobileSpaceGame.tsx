@@ -69,7 +69,7 @@ export const MobileSpaceGame = () => {
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
         };
-    }, [gameStarted, newLevel, level, bulletSpeed]);
+    }, [gameStarted, newLevel, level, bulletSpeed]); //  todo: make stop state
 
     useEffect(() => {
         if (!lifes) {
