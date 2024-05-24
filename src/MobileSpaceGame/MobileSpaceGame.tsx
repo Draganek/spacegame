@@ -51,7 +51,7 @@ export const MobileSpaceGame = () => {
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
 
-        if (!gameStarted || newLevel) {
+        if (!gameStarted || newLevel || !lifes) {
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
@@ -69,12 +69,9 @@ export const MobileSpaceGame = () => {
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
         };
-    }, [gameStarted, newLevel, level, bulletSpeed]); //  todo: make stop state
+    }, [gameStarted, newLevel, level, lifes]); //  todo: make stop state
 
     useEffect(() => {
-        if (!lifes) {
-            setGameStarted(false)
-        }
         if (score >= 10 * level) {
             setNewLevel(true);
         }
@@ -86,7 +83,7 @@ export const MobileSpaceGame = () => {
             setMoney(prevMoney => prevMoney + increaseAmount);
             setPreviousScore(score);
         }
-    }, [score, previousScore, record, lifes])
+    }, [score, previousScore, record])
 
     const resetGame = () => {
         setGameStarted(true);
