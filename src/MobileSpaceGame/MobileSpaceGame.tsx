@@ -6,6 +6,7 @@ import { createEnemy, moveEnemies } from './Enemies/Enemies'
 import { Points, ShowLifes, LevelShow } from './InterfaseIcon/InterfaseIcon'
 import { GameLose, LevelWon, StartMenu } from './ModalWinows/ModalWindows'
 const defaultMusic = require('./music/intro.mp3');
+const soundGameLose = require("./sounds/game_lose.wav");
 
 interface UpgradesType {
     name: string;
@@ -21,6 +22,8 @@ export const MobileSpaceGame = () => {
     const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
     const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
 
+    const [gameInterface, setGameInterface] = useState({ pause: true, startModal: true, levelModal: false })
+
     const [level, setLevel] = useState<number>(1);
     const [lifes, setLifes] = useState<number>(3);
     const [score, setScore] = useState<number>(0);
@@ -33,9 +36,6 @@ export const MobileSpaceGame = () => {
         { "name": "Heal", "price": 10, "image": "heart-heal.jpg", "available": true, "level": 1 }])
 
     const [bulletSpeed, SetBulletSpeed] = useState<number>(1);
-
-    const [gameStarted, setGameStarted] = useState<boolean>(false);
-    const [newLevel, setNewLevel] = useState<boolean>(false);
 
     const [shipPosition, setShipPosition] = useState({ x: "50%", y: '0%' });
 
@@ -51,7 +51,7 @@ export const MobileSpaceGame = () => {
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
 
-        if (!gameStarted || newLevel || !lifes) {
+        if (gameInterface.pause) {
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
@@ -69,11 +69,11 @@ export const MobileSpaceGame = () => {
             clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
         };
-    }, [gameStarted, newLevel, level, lifes]); //  todo: make stop state
+    }, [gameInterface.pause, level]);
 
     useEffect(() => {
         if (score >= 10 * level) {
-            setNewLevel(true);
+            setGameInterface(prev => ({ ...prev, pause: false, levelModal: false , startModal: false}));
         }
         if (record < level) {
             setRecord(level);
@@ -83,10 +83,17 @@ export const MobileSpaceGame = () => {
             setMoney(prevMoney => prevMoney + increaseAmount);
             setPreviousScore(score);
         }
-    }, [score, previousScore, record])
+        if (!lifes) {
+            setGameInterface(prev => ({ ...prev, pause: true}));
+            let file = new Howl({
+                src: [soundGameLose],
+            });
+            file.play();
+        }
+    }, [score, previousScore, record, lifes])
 
     const resetGame = () => {
-        setGameStarted(true);
+        setGameInterface(prev => ({ ...prev, pause: false, newLevel: false, startModal: false }));
         setScore(0);
         setLifes(3);
         setLevel(1);
@@ -127,12 +134,12 @@ export const MobileSpaceGame = () => {
                         bottom: shipPosition.y,
                     }}>
                 </div>
-                <LevelShow gameStarted={gameStarted} newLevel={newLevel} level={level} />
+                <LevelShow gameStarted={gameInterface.startModal} newLevel={gameInterface.levelModal} level={level} />
                 <Points score={money} />
                 <ShowLifes lifes={lifes} />
-                <GameLose lifes={lifes} reset={resetGame} level={level} record={record} />
-                <StartMenu gameStarted={gameStarted} reset={resetGame} record={record} />
-                <LevelWon setLifes={setLifes} lifes={lifes} setMoney={setMoney} money={money} newLevel={newLevel} level={level} setLevel={setLevel} setNewLevel={setNewLevel} boardRef={boardRef} playerRef={playerRef} enemies={enemies} bullets={bullets} setUpgrades={setUpgrades} upgrades={upgrades} />
+                <GameLose lifes={lifes} reset={resetGame} level={level} record={record}/>
+                <StartMenu startModal={gameInterface.startModal} reset={resetGame} record={record} />
+                <LevelWon setLifes={setLifes} lifes={lifes} setMoney={setMoney} money={money} newLevel={gameInterface.levelModal} level={level} setLevel={setLevel} setNewLevel={setGameInterface} boardRef={boardRef} playerRef={playerRef} enemies={enemies} bullets={bullets} setUpgrades={setUpgrades} upgrades={upgrades} />
             </div>
         </div >
     )
