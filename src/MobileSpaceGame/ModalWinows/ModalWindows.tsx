@@ -123,7 +123,7 @@ export const LevelWon = ({
         upgrades: UpgradesType[]
     ) => {
         setLevel((oldLevel) => oldLevel + 1);
-        setNewLevel(prev => ({ ...prev, levelModal: false }));
+        setNewLevel(prev => ({ ...prev, pause: false, startModal: false, levelModal: false }));
         enemies.forEach((enemy) => enemy.remove());
         bullets.forEach((bullet) => bullet.remove());
         playerRef.current!.style.left = "50%";
@@ -153,6 +153,11 @@ export const LevelWon = ({
                 setUpgrades(updatedUpgrades);
             }
             if (upgrades[index].name === "Szybkość") {
+                updatedUpgrades[index].level++;
+                setUpgrades(updatedUpgrades);
+                setMoney((prevMoney) => prevMoney - cost);
+            }
+            if (upgrades[index].name === "Strzały") {
                 updatedUpgrades[index].level++;
                 setUpgrades(updatedUpgrades);
                 setMoney((prevMoney) => prevMoney - cost);

@@ -13,20 +13,49 @@ export const playerMove = (e: TouchEvent, boardRef: RefObject<HTMLDivElement>, p
     }
 };
 
-export const createBullet = (boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>) => {
+export const createBullet = (boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>, bulletLevel: number) => {
     let file = new Howl({
         src: [soundShot]
     });
     file.play();
 
-    const bullet = document.createElement('div');
+    switch (bulletLevel) {
+        case 1:
+            configureBullet(-4, 5, boardRef, playerRef, setBullets)
+            break;
+
+        case 2:
+            configureBullet(-18, 0, boardRef, playerRef, setBullets)
+            configureBullet(10, 0, boardRef, playerRef, setBullets)
+            break;
+        case 3:
+            configureBullet(-4, 5, boardRef, playerRef, setBullets)
+            configureBullet(-18, 0, boardRef, playerRef, setBullets)
+            configureBullet(10, 0, boardRef, playerRef, setBullets)
+            break;
+        case 4:
+            configureBullet(-18, 0, boardRef, playerRef, setBullets)
+            configureBullet(10, 0, boardRef, playerRef, setBullets)
+            configureBullet(-30, -5, boardRef, playerRef, setBullets)
+            configureBullet(23, -5, boardRef, playerRef, setBullets)
+            break;
+        case 5:
+            configureBullet(-4, 5, boardRef, playerRef, setBullets)
+            configureBullet(-18, 0, boardRef, playerRef, setBullets)
+            configureBullet(10, 0, boardRef, playerRef, setBullets)
+            configureBullet(-30, -5, boardRef, playerRef, setBullets)
+            configureBullet(23, -5, boardRef, playerRef, setBullets)
+            break;
+    }
+}
+
+const configureBullet = (width: number, hight: number, boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>) => {
+    let bullet = document.createElement('div');
     bullet.className = 'bullet';
-    bullet.style.left = `${playerRef.current!.offsetLeft-4}px`;
-    bullet.style.top = `${playerRef.current!.offsetTop}px`;
+    bullet.style.left = `${playerRef.current!.offsetLeft + width}px`;
+    bullet.style.top = `${playerRef.current!.offsetTop - hight}px`;
     boardRef.current!.appendChild(bullet);
-
     setBullets(prevBullets => [...prevBullets, bullet]);
-
 }
 
 export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, boardRef: RefObject<HTMLDivElement>, setScore: Dispatch<SetStateAction<number>>) => {

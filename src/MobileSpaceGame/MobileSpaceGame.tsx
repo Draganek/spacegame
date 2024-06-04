@@ -31,7 +31,7 @@ export const MobileSpaceGame = () => {
     const [money, setMoney] = useState<number>(0);
     const [upgrades, setUpgrades] = useState<UpgradesType[]>([
         { "name": "Szybkość", "price": 20, "image": "frequency.jpg", "available": true, "level": 1 },
-        { "name": "Strzały", "price": 300, "image": "ilosc.jpg", "available": true, "level": 1 },
+        { "name": "Strzały", "price": 50, "image": "ilosc.jpg", "available": true, "level": 1 },
         { "name": "Max HP", "price": 30, "image": "heart-max.jpg", "available": true, "level": 3 },
         { "name": "Heal", "price": 10, "image": "heart-heal.jpg", "available": true, "level": 1 }])
 
@@ -43,7 +43,7 @@ export const MobileSpaceGame = () => {
     const boardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets), 1400 - 170 * upgrades[0].level);
+        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets, upgrades[1].level), 1400 - 170 * upgrades[0].level);
         const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - (15 * level));
         const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 40 - (3 * level));
         const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 10);
@@ -73,7 +73,7 @@ export const MobileSpaceGame = () => {
 
     useEffect(() => {
         if (score >= 10 * level) {
-            setGameInterface(prev => ({ ...prev, pause: false, levelModal: false , startModal: false}));
+            setGameInterface(prev => ({ ...prev, pause: true, levelModal: true , startModal: false}));
         }
         if (record < level) {
             setRecord(level);
@@ -97,7 +97,16 @@ export const MobileSpaceGame = () => {
         setScore(0);
         setLifes(3);
         setLevel(1);
-        setMoney(300)
+        setMoney(0)
+        setUpgrades(prevUpgrades =>
+            prevUpgrades.map(upgrade => {
+                if (upgrade.name === "Max HP") {
+                    return { ...upgrade, level: 3 };
+                } else {
+                    return { ...upgrade, level: 1 };
+                }
+            })
+        );
 
         enemies.forEach(enemy => enemy.remove());
         bullets.forEach(bullet => bullet.remove())

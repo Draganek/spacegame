@@ -24,7 +24,7 @@ export const LevelShow = ({ gameStarted, newLevel, level }: { gameStarted: boole
     const [showLevel, setShowLevel] = useState<boolean>(false);
 
     useEffect(() => {
-        if (gameStarted || newLevel) {
+        if (!gameStarted || !newLevel) {
             setShowLevel(true);
             const timeout = setTimeout(() => {
                 setShowLevel(false);
