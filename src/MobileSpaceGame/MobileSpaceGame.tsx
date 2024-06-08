@@ -97,7 +97,7 @@ export const MobileSpaceGame = () => {
         setScore(0);
         setLifes(3);
         setLevel(1);
-        setMoney(0)
+        setMoney(0);
         setUpgrades(prevUpgrades =>
             prevUpgrades.map(upgrade => {
                 if (upgrade.name === "Max HP") {
