@@ -43,7 +43,7 @@ export const MobileSpaceGame = () => {
     const boardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets, upgrades[1].level), 1400 - 170 * upgrades[0].level);
+        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets, upgrades[1].level), 1400 - 180 * upgrades[0].level);
         const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - (15 * level));
         const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 40 - (3 * level));
         const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 10);
