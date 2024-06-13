@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import useStorage from '../hooks/useStorage'
 import './MobileSpaceGame.css'
 import { playerMove, createBullet, moveBullets } from './Player/Player'
-import { createEnemy, moveEnemies } from './Enemies/Enemies'
+import { Enemies, createEnemy, moveEnemies } from './Enemies/Enemies'
 import { Points, ShowLifes, LevelShow } from './InterfaseIcon/InterfaseIcon'
 import { GameLose, LevelWon, StartMenu } from './ModalWinows/ModalWindows'
+import { levelConfigurations } from '../gameConfig/levelConfigurations'
 const defaultMusic = require('./music/intro.mp3');
 const soundGameLose = require("./sounds/game_lose.wav");
 
@@ -43,20 +44,17 @@ export const MobileSpaceGame = () => {
     const boardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets, upgrades[1].level), 1400 - 180 * upgrades[0].level);
-        const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies), 1000 - (15 * level));
-        const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 40 - (3 * level));
+        const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets, upgrades[1].level), 1400 - 190 * upgrades[0].level);
+        
         const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 10);
         const handleTouchMove = (e: TouchEvent) => playerMove(e, boardRef, playerRef, setShipPosition);
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
 
         if (gameInterface.pause) {
-            clearInterval(enemyInterval);
-            clearInterval(moveEnemiesInterval);
+
             clearInterval(bulletShotInterval);
             clearInterval(bulletInterval);
-
             boardRef.current!.style.animation = 'none';
             window.removeEventListener('touchmove', handleTouchMove)
             window.addEventListener('touchmove', (e) => { e.preventDefault() }, { passive: false });
@@ -65,23 +63,21 @@ export const MobileSpaceGame = () => {
         return () => {
             window.removeEventListener('touchmove', handleTouchMove);
             clearInterval(bulletInterval);
-            clearInterval(enemyInterval);
-            clearInterval(moveEnemiesInterval);
             clearInterval(bulletShotInterval);
         };
     }, [gameInterface.pause, level]);
 
     useEffect(() => {
-        if (score >= 10 * level) {
+        if (score >= levelConfigurations[level].count) {
             setGameInterface(prev => ({ ...prev, pause: true, levelModal: true , startModal: false}));
+            setScore(0);
         }
         if (record < level) {
             setRecord(level);
         }
         if (score > previousScore) {
-            const increaseAmount = score - previousScore;
-            setMoney(prevMoney => prevMoney + increaseAmount);
-            setPreviousScore(score);
+            setMoney(prevMoney => prevMoney + 1);
+            setPreviousScore(0);
         }
         if (!lifes) {
             setGameInterface(prev => ({ ...prev, pause: true}));
@@ -143,6 +139,7 @@ export const MobileSpaceGame = () => {
                         bottom: shipPosition.y,
                     }}>
                 </div>
+                <Enemies boardRef={boardRef} setEnemies={setEnemies} gameInterface={gameInterface} setLifes={setLifes} level={level}/>
                 <LevelShow gameStarted={gameInterface.startModal} newLevel={gameInterface.levelModal} level={level} />
                 <Points score={money} />
                 <ShowLifes lifes={lifes} />

@@ -1,9 +1,12 @@
-import { RefObject, Dispatch, SetStateAction } from 'react';
+import { levelConfigurations } from '../../gameConfig/levelConfigurations';
+import { RefObject, Dispatch, SetStateAction, useEffect, useState } from 'react';
 const hurt = require('../sounds/hurt.mp3');
 
-export const createEnemy = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>) => {
+export const createEnemy = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, setEnemiesNumber: Dispatch<SetStateAction<number>>) => {
+    if (!boardRef.current) return;
     const shouldCreate = Math.round(Math.random());
     if (shouldCreate) {
+        setEnemiesNumber(prevCount => prevCount + 1)
         const enemy = document.createElement('div');
         enemy.className = "enemy";
         enemy.style.top = '-40px';
@@ -38,3 +41,29 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
         return updatedEnemies;
     });
 };
+
+export const Enemies = ({ boardRef, setEnemies, gameInterface, setLifes, level }: { boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, gameInterface: any, setLifes: Dispatch<SetStateAction<number>>, level: number }) => {
+    const [enemiesNumber, setEnemiesNumber] = useState<number>(0);
+
+    useEffect(() => {
+        const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies, setEnemiesNumber), 1100 - (100 * levelConfigurations[level].frequency));
+        const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 31 - (3 * levelConfigurations[level].speed));
+        if (gameInterface.pause) {
+            clearInterval(enemyInterval);
+            clearInterval(moveEnemiesInterval);
+        }
+        if (enemiesNumber >= levelConfigurations[level].count) {
+            clearInterval(enemyInterval);
+        }
+        return () => {
+            clearInterval(enemyInterval);
+            clearInterval(moveEnemiesInterval);
+        }
+    }, [gameInterface, enemiesNumber])
+
+    useEffect(() => {
+        setEnemiesNumber(0);
+    }, [level]);
+
+    return null;
+}
