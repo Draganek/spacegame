@@ -62,7 +62,7 @@ export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]
     setBullets(prevBullets => {
         const updatedBullets: HTMLDivElement[] = [];
         const boardHeight = boardRef.current!.offsetHeight;
-        const moveDistance = 0.003 * boardHeight;
+        const moveDistance = 0.004 * boardHeight;
 
         prevBullets.forEach(bullet => {
             if (bullet.offsetTop >= 0) {

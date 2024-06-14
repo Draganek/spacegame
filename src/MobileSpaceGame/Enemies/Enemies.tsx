@@ -17,11 +17,11 @@ export const createEnemy = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
     }
 }
 
-export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, setLifes: Dispatch<SetStateAction<number>>) => {
+export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, setLifes: Dispatch<SetStateAction<number>>, speed: number, setEnemiesNumber: Dispatch<SetStateAction<number>>) => {
     setEnemies(prevEnemies => {
         const updatedEnemies: HTMLDivElement[] = [];
         const boardHeight = boardRef.current!.offsetHeight;
-        const moveDistance = 0.0025 * boardHeight;
+        const moveDistance =(0.001 + (speed * 0.0003)) * boardHeight;
 
         prevEnemies.forEach(enemy => {
             const newTop = enemy.offsetTop + moveDistance;
@@ -30,6 +30,7 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
                 updatedEnemies.push(enemy);
             } else {
                 enemy.remove();
+                setEnemiesNumber(prevCount => prevCount - 1)
                 setLifes(prevLifes => prevLifes - 1)
                 let file = new Howl({
                     src: [hurt],
@@ -44,11 +45,13 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
 
 export const Enemies = ({ boardRef, setEnemies, gameInterface, setLifes, level }: { boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, gameInterface: any, setLifes: Dispatch<SetStateAction<number>>, level: number }) => {
     const [enemiesNumber, setEnemiesNumber] = useState<number>(0);
+    const [pauseEnemy, setPauseEnemy] = useState<boolean>(true)
+    const [previousLevel, setPreviousLevel] = useState<number>(0)
 
     useEffect(() => {
         const enemyInterval = setInterval(() => createEnemy(boardRef, setEnemies, setEnemiesNumber), 1100 - (100 * levelConfigurations[level].frequency));
-        const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes), 31 - (3 * levelConfigurations[level].speed));
-        if (gameInterface.pause) {
+        const moveEnemiesInterval = setInterval(() => moveEnemies(boardRef, setEnemies, setLifes, levelConfigurations[level].speed, setEnemiesNumber), 25);
+        if (gameInterface.pause || pauseEnemy) {
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
         }
@@ -59,11 +62,16 @@ export const Enemies = ({ boardRef, setEnemies, gameInterface, setLifes, level }
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
         }
-    }, [gameInterface, enemiesNumber])
+    }, [gameInterface, enemiesNumber, pauseEnemy])
 
     useEffect(() => {
+        if (level > previousLevel) {
+            setPreviousLevel(level);
+            setTimeout(() => setPauseEnemy(false), 3000)
+        }
         setEnemiesNumber(0);
-    }, [level]);
+        setPauseEnemy(true);
+    }, [level, previousLevel]);
 
     return null;
 }

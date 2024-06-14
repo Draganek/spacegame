@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import useStorage from '../hooks/useStorage'
 import './MobileSpaceGame.css'
 import { playerMove, createBullet, moveBullets } from './Player/Player'
-import { Enemies, createEnemy, moveEnemies } from './Enemies/Enemies'
-import { Points, ShowLifes, LevelShow } from './InterfaseIcon/InterfaseIcon'
+import { Enemies } from './Enemies/Enemies'
+import { Points, ShowLifes, LevelShow, GameAllert } from './InterfaseIcon/InterfaseIcon'
 import { GameLose, LevelWon, StartMenu } from './ModalWinows/ModalWindows'
 import { levelConfigurations } from '../gameConfig/levelConfigurations'
 const defaultMusic = require('./music/intro.mp3');
@@ -68,16 +68,17 @@ export const MobileSpaceGame = () => {
     }, [gameInterface.pause, level]);
 
     useEffect(() => {
-        if (score >= levelConfigurations[level].count) {
-            setGameInterface(prev => ({ ...prev, pause: true, levelModal: true , startModal: false}));
-            setScore(0);
-        }
         if (record < level) {
             setRecord(level);
         }
         if (score > previousScore) {
             setMoney(prevMoney => prevMoney + 1);
+            setPreviousScore(score);
+        }
+        if (score >= levelConfigurations[level].count) {
+            setGameInterface(prev => ({ ...prev, pause: true, levelModal: true , startModal: false}));
             setPreviousScore(0);
+            setScore(0);
         }
         if (!lifes) {
             setGameInterface(prev => ({ ...prev, pause: true}));
@@ -115,7 +116,7 @@ export const MobileSpaceGame = () => {
     const backgroundMusic = () => {
         const backgroundMusic = new Howl({
             src: [defaultMusic],
-            volume: 0.3, // Ustawienie głośności na 50% (wartość od 0 do 1)
+            volume: 0.2, // Ustawienie głośności na 50% (wartość od 0 do 1)
             loop: true // Zapętlenie muzyki
         });
 
@@ -141,6 +142,7 @@ export const MobileSpaceGame = () => {
                 </div>
                 <Enemies boardRef={boardRef} setEnemies={setEnemies} gameInterface={gameInterface} setLifes={setLifes} level={level}/>
                 <LevelShow gameStarted={gameInterface.startModal} newLevel={gameInterface.levelModal} level={level} />
+                <GameAllert gameStarted={gameInterface.startModal} newLevel={gameInterface.levelModal} level={level} />
                 <Points score={money} />
                 <ShowLifes lifes={lifes} />
                 <GameLose lifes={lifes} reset={resetGame} level={level} record={record}/>

@@ -39,3 +39,27 @@ export const LevelShow = ({ gameStarted, newLevel, level }: { gameStarted: boole
         </div>
     )
 }
+
+export const GameAllert = ({ gameStarted, newLevel, level }: { gameStarted: boolean, newLevel: boolean, level: number }) => {
+    const [showLevel, setShowLevel] = useState<boolean>(false);
+    
+    useEffect(() => {
+        if (!gameStarted || !newLevel) {
+            setShowLevel(true);
+            const timeout = setTimeout(() => {
+                setShowLevel(false);
+            }, 3000);
+            return () => clearTimeout(timeout);
+        }
+    }, [gameStarted, level])
+
+    return (
+        <>
+            {level === 10 && (
+                <div className='gameAllert' hidden={!showLevel}>
+                    <span>HORDA OBCYCH NADCIĄGA!</span>
+                </div>
+            )}
+        </>
+    );
+};

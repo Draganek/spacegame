@@ -116,6 +116,19 @@ h1 {
   transform: translate(-50%);
 }
 
+.gameAllert {
+  z-index: 3;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: rgb(186, 240, 186);
+  text-align: center;
+  white-space: nowrap; /* Zapobiega zawijaniu się tekstu */
+}
+
 .hurt {
   z-index: 3;
   height: 100%;
