@@ -21,7 +21,7 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
     setEnemies(prevEnemies => {
         const updatedEnemies: HTMLDivElement[] = [];
         const boardHeight = boardRef.current!.offsetHeight;
-        const moveDistance =(0.001 + (speed * 0.0003)) * boardHeight;
+        const moveDistance =(0.002 + (speed * 0.0004)) * boardHeight;
 
         prevEnemies.forEach(enemy => {
             const newTop = enemy.offsetTop + moveDistance;
