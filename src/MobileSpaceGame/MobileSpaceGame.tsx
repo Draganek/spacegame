@@ -33,7 +33,7 @@ export const MobileSpaceGame = () => {
     const [upgrades, setUpgrades] = useState<UpgradesType[]>([
         { "name": "Szybkość", "price": 20, "image": "frequency.jpg", "available": true, "level": 1 },
         { "name": "Strzały", "price": 50, "image": "ilosc.jpg", "available": true, "level": 1 },
-        { "name": "Max HP", "price": 30, "image": "heart-max.jpg", "available": true, "level": 3 },
+        { "name": "Max HP", "price": 30, "image": "heart-max.jpg", "available": true, "level": 30 },
         { "name": "Heal", "price": 10, "image": "heart-heal.jpg", "available": true, "level": 1 }])
 
     const [bulletSpeed, SetBulletSpeed] = useState<number>(1);

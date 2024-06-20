@@ -1,5 +1,5 @@
 export const levelConfigurations: any = {
-    1: { count: 5, speed: 0, frequency: 0},
+    1: { count: 5, speed: 0, frequency: 0, slanter: 5},
     2: { count: 10, speed: 1, frequency: 1},
     3: { count: 15, speed: 2, frequency: 2 },
     4: { count: 20, speed: 3, frequency: 2 },
