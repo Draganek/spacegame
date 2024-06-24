@@ -117,7 +117,7 @@ export const createSlanter = (boardRef: RefObject<HTMLDivElement>, setSlanters: 
         setSlanters(prevEnemies => [...prevEnemies, enemy])
     }
 }
-
+// TODO: zrobić kolizję z nowym rodzajem przeciwników
 export const moveSlanter = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<Enemy[]>>, setLifes: Dispatch<SetStateAction<number>>, speed: number, setEnemiesNumber: Dispatch<SetStateAction<number>>) => {
     setEnemies(prevEnemies => {
     const updatedEnemies: Enemy[] = [];
