@@ -17,11 +17,17 @@ interface UpgradesType {
     level: number;
 }
 
+interface Enemy extends HTMLDivElement {
+    velocityX: number;
+    velocityY: number;
+  }
+
 export const MobileSpaceGame = () => {
     const [record, setRecord] = useStorage<number>('record', 0);
 
     const [bullets, setBullets] = useState<HTMLDivElement[]>([]);
     const [enemies, setEnemies] = useState<HTMLDivElement[]>([]);
+    const [slanters, setSlanters] = useState<Enemy[]>([]);
 
     const [gameInterface, setGameInterface] = useState({ pause: true, startModal: true, levelModal: false })
 
