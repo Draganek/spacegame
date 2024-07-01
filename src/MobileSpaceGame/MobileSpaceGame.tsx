@@ -62,7 +62,7 @@ export const MobileSpaceGame = () => {
             clearInterval(bulletShotInterval);
             clearInterval(bulletInterval);
             boardRef.current!.style.animation = 'none';
-            window.removeEventListener('touchmove', handleTouchMove)
+            window.removeEventListener('touchmove', handleTouchMove);
             window.addEventListener('touchmove', (e) => { e.preventDefault() }, { passive: false });
         }
 
