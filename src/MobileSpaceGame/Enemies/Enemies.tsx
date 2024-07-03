@@ -1,4 +1,4 @@
-import { levelConfigurations } from '../../gameConfig/levelConfigurations';
+import { levelConfigurations, slantersConfig } from '../../gameConfig/levelConfigurations';
 import { RefObject, Dispatch, SetStateAction, useEffect, useState } from 'react';
 const hurt = require('../sounds/hurt.mp3');
 
@@ -26,7 +26,7 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
     setEnemies(prevEnemies => {
         const updatedEnemies: HTMLDivElement[] = [];
         const boardHeight = boardRef.current!.offsetHeight;
-        const moveDistance =(0.004 + (speed * 0.0005)) * boardHeight;
+        const moveDistance =(0.003 + (speed * 0.0002)) * boardHeight;
 
         prevEnemies.forEach(enemy => {
             const newTop = enemy.offsetTop + moveDistance;
@@ -48,10 +48,9 @@ export const moveEnemies = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
     });
 };
 
-export const Enemies = ({ boardRef, setEnemies, gameInterface, setLifes, level }: { boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, gameInterface: any, setLifes: Dispatch<SetStateAction<number>>, level: number }) => {
+export const Enemies = ({ boardRef, setEnemies, gameInterface, setLifes, level, setSlanters }: { boardRef: RefObject<HTMLDivElement>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, gameInterface: any, setLifes: Dispatch<SetStateAction<number>>, level: number ,setSlanters: Dispatch<SetStateAction<Enemy[]>>}) => {
     const [enemiesNumber, setEnemiesNumber] = useState<number>(0);
-    const [slanters, setSlanters] = useState<Enemy[]>([]);
-    const [slantersNumber, setSlanterNumber] = useState<number>(0);
+    const [slantersNumber, setSlantersNumber] = useState<number>(0);
     const [pauseEnemy, setPauseEnemy] = useState<boolean>(true)
     const [previousLevel, setPreviousLevel] = useState<number>(0)
 
@@ -81,20 +80,20 @@ export const Enemies = ({ boardRef, setEnemies, gameInterface, setLifes, level }
     }, [level, previousLevel]);
 
     useEffect(() => {
-        const enemyInterval = setInterval(() => createSlanter(boardRef, setSlanters, setEnemiesNumber), 1100 - (100 * levelConfigurations[level].frequency));
-        const moveEnemiesInterval = setInterval(() => moveSlanter(boardRef, setSlanters, setLifes, levelConfigurations[level].speed, setEnemiesNumber), 25);
+        const enemyInterval = setInterval(() => createSlanter(boardRef, setSlanters, setSlantersNumber), 1100 - (100 * slantersConfig[level].frequency));
+        const moveEnemiesInterval = setInterval(() => moveSlanter(boardRef, setSlanters, setLifes, slantersConfig[level].speed, setEnemiesNumber), 25);
         if (gameInterface.pause || pauseEnemy) {
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
         }
-        if (enemiesNumber >= levelConfigurations[level].count) {
+        if (slantersNumber >= slantersConfig[level].count) {
             clearInterval(enemyInterval);
         }
         return () => {
             clearInterval(enemyInterval);
             clearInterval(moveEnemiesInterval);
         }
-    }, [gameInterface, enemiesNumber, pauseEnemy])
+    }, [gameInterface, slantersNumber, pauseEnemy])
 
     return null;
 }
@@ -111,7 +110,7 @@ export const createSlanter = (boardRef: RefObject<HTMLDivElement>, setSlanters: 
         enemy.style.top = '-40px';
         enemy.style.left = `${Math.floor(Math.random() * (boardRef.current!.offsetWidth - 120) + 60)}px`
         enemy.velocityX = (Math.random() * 2 - 1) || 0.5; // Losowa prędkość w zakresie od -1 do 1, ale nie 0
-    enemy.velocityY = Math.random() * 2; // Prędkość pionowa (w dół)
+        enemy.velocityY = Math.random() * 2; // Prędkość pionowa (w dół)
 
         boardRef.current!.append(enemy);
         setSlanters(prevEnemies => [...prevEnemies, enemy])
@@ -133,7 +132,7 @@ export const moveSlanter = (boardRef: RefObject<HTMLDivElement>, setEnemies: Dis
       // Sprawdź kolizję z krawędziami
       if (newLeft <= 0 || newLeft >= boardWidth - enemy.offsetWidth) {
         enemy.velocityX *= -1; // Zmień kierunek w osi X
-        enemy.velocityY += (Math.random() - 0.5) * 0.2; // Dodaj losowe odchylenie w osi Y
+        enemy.velocityY += (Math.random() - 0.5) * 0.1; // Dodaj losowe odchylenie w osi Y
       }
 
       if (Math.abs(enemy.velocityX) < 0.1) {

@@ -3,6 +3,11 @@ import { Howl } from 'howler';
 const soundShot = require('../sounds/light_shot.ogg');
 const soundHit = require('../sounds/hit.wav');
 
+interface Enemy extends HTMLDivElement {
+    velocityX: number;
+    velocityY: number;
+  }
+
 export const playerMove = (e: TouchEvent, boardRef: RefObject<HTMLDivElement>, playerRef: RefObject<HTMLDivElement>, setShipPosition: Dispatch<{ x: string; y: string; }>) => {
     e.preventDefault();
     const touch = e.touches[0];
@@ -58,7 +63,7 @@ const configureBullet = (width: number, hight: number, boardRef: RefObject<HTMLD
     setBullets(prevBullets => [...prevBullets, bullet]);
 }
 
-export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, boardRef: RefObject<HTMLDivElement>, setScore: Dispatch<SetStateAction<number>>) => {
+export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]>>, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, boardRef: RefObject<HTMLDivElement>, setScore: Dispatch<SetStateAction<number>>, setSlanters: Dispatch<SetStateAction<Enemy[]>>) => {
     setBullets(prevBullets => {
         const updatedBullets: HTMLDivElement[] = [];
         const boardHeight = boardRef.current!.offsetHeight;
@@ -69,7 +74,7 @@ export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]
                 const newTop = bullet.offsetTop - moveDistance;
                 bullet.style.top = `${newTop}px`;
                 updatedBullets.push(bullet);
-                checkBulletCollision(bullet, setEnemies, boardRef, setScore);
+                checkBulletCollision(bullet, setEnemies, boardRef, setScore, setSlanters);
             } else {
                 bullet.remove();
             }
@@ -78,8 +83,28 @@ export const moveBullets = (setBullets: Dispatch<SetStateAction<HTMLDivElement[]
     });
 };
 
-const checkBulletCollision = (bullet: HTMLDivElement, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, boardRef: RefObject<HTMLDivElement>, setScore: Dispatch<SetStateAction<number>>) => {
+const checkBulletCollision = (bullet: HTMLDivElement, setEnemies: Dispatch<SetStateAction<HTMLDivElement[]>>, boardRef: RefObject<HTMLDivElement>, setScore: Dispatch<SetStateAction<number>>, setSlanters: Dispatch<SetStateAction<Enemy[]>>) => {
     setEnemies(prevEnemies => {
+        const updatedEnemies = prevEnemies.filter(enemy => {
+            const bulletPosition = bullet.getBoundingClientRect();
+            const enemyPosition = enemy.getBoundingClientRect();
+            if (
+                bulletPosition.left < enemyPosition.right &&
+                bulletPosition.right > enemyPosition.left &&
+                bulletPosition.top < enemyPosition.bottom &&
+                bulletPosition.bottom > enemyPosition.top
+            ) {
+                makeExplosion(enemy.offsetLeft, enemy.offsetTop, boardRef);
+                setScore(prevScore => prevScore + 1);
+                enemy.remove();
+                bullet.remove();
+                return false;
+            }
+            return true;
+        });
+        return updatedEnemies;
+    });
+    setSlanters(prevEnemies => {
         const updatedEnemies = prevEnemies.filter(enemy => {
             const bulletPosition = bullet.getBoundingClientRect();
             const enemyPosition = enemy.getBoundingClientRect();

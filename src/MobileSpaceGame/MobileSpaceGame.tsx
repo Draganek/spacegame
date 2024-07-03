@@ -42,8 +42,6 @@ export const MobileSpaceGame = () => {
         { "name": "Max HP", "price": 30, "image": "heart-max.jpg", "available": true, "level": 30 },
         { "name": "Heal", "price": 10, "image": "heart-heal.jpg", "available": true, "level": 1 }])
 
-    const [bulletSpeed, SetBulletSpeed] = useState<number>(1);
-
     const [shipPosition, setShipPosition] = useState({ x: "50%", y: '0%' });
 
     const playerRef = useRef<HTMLDivElement>(null);
@@ -52,7 +50,7 @@ export const MobileSpaceGame = () => {
     useEffect(() => {
         const bulletShotInterval = setInterval(() => createBullet(boardRef, playerRef, setBullets, upgrades[1].level), 1400 - 190 * upgrades[0].level);
         
-        const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore), 10);
+        const bulletInterval = setInterval(() => moveBullets(setBullets, setEnemies, boardRef, setScore, setSlanters), 10);
         const handleTouchMove = (e: TouchEvent) => playerMove(e, boardRef, playerRef, setShipPosition);
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
@@ -146,7 +144,7 @@ export const MobileSpaceGame = () => {
                         bottom: shipPosition.y,
                     }}>
                 </div>
-                <Enemies boardRef={boardRef} setEnemies={setEnemies} gameInterface={gameInterface} setLifes={setLifes} level={level}/>
+                <Enemies boardRef={boardRef} setEnemies={setEnemies} gameInterface={gameInterface} setLifes={setLifes} level={level} setSlanters={setSlanters}/>
                 <LevelShow gameStarted={gameInterface.startModal} newLevel={gameInterface.levelModal} level={level} />
                 <GameAllert gameStarted={gameInterface.startModal} newLevel={gameInterface.levelModal} level={level} />
                 <Points score={money} />
